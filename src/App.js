@@ -192,7 +192,7 @@ function App() {
         value: 0.0,
       },
     }),
-    [jsonData]
+    []
   );
 
   useEffect(() => {
