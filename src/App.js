@@ -62,10 +62,11 @@ function App() {
   };
 
   const [isConnected, setIsConnected] = useState(false); // Connection status
-
-  // const ws = new WebSocket("http://localhost:8080");
   
-    const ws = new WebSocket("wss://simple-websocket-test.onrender.com")
+
+  const ws = new WebSocket("http://localhost:8080");
+  
+    // const ws = new WebSocket("wss://simple-websocket-test.onrender.com")
 
   useEffect(() => {
     // const ws = new WebSocket("wss://simple-websocket-test.onrender.com")
@@ -191,7 +192,7 @@ function App() {
         value: 0.0,
       },
     }),
-    []
+    [jsonData]
   );
 
   useEffect(() => {
@@ -207,7 +208,7 @@ function App() {
 
       ws.onmessage = (event) => {
         // // const message = JSON.parse(event.data).data.height;
-
+        console.log("a message is sent!");
         const message = JSON.parse(event.data);
 
         // Check if it's a Buffer-like object
