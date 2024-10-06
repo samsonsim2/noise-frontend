@@ -64,9 +64,9 @@ function App() {
   const [isConnected, setIsConnected] = useState(false); // Connection status
   
 
-  const ws = new WebSocket("http://localhost:8080");
+  // const ws = new WebSocket("http://localhost:8080");
   
-    // const ws = new WebSocket("wss://simple-websocket-test.onrender.com")
+    const ws = new WebSocket("wss://simple-websocket-test.onrender.com")
 
   useEffect(() => {
     // const ws = new WebSocket("wss://simple-websocket-test.onrender.com")
