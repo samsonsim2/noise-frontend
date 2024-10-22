@@ -410,8 +410,250 @@ float noiseSample = 0.0;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
 `
-export default function Square({ props, mesh, uniforms }) {
+export default function Square({ props,yRotation,zRotation}) {
+    const mesh = useRef();
+    const noiseParameters = {
+        minStep: 0,
+        maxStep: 1.0,
+        frequency: 1.0,
+        color1: "#ffffff",
+        color2: "#000000",
+        speed:1.0,
+        invert: false,
+        step: false,
+      };
+    
+      const noiseType = {
+        perlin: false,
+        voronoi: false,
+        warped: false,
+      };
+    
+      const [option, setOption] = useState(0.0);
+      function setChecked(prop) {
+        for (let param in noiseType) {
+          noiseType[param] = false;
+        }
+        noiseType[prop] = true;
+    
+        if (prop == "perlin") {
+          // mesh.current.material.uniforms.noiseOption.value = 0.0;
+ 
+          return 0.0
+        } else if (prop == "voronoi") {
+          // mesh.current.material.uniforms.noiseOption.value = 1.0;
+         
+          return 1.0
+        } else if (prop == "warped") {
+          // mesh.current.material.uniforms.noiseOption.value = 2.0;
+ 
+          return 2.0
+        }
 
+        
+      }
+    
+      let jsonData = {
+        time: 0.0,
+        minStep: 0.1,
+        maxStep: 0.6,
+        frequency: 1.0,
+        color1: new THREE.Color(0xffffff),
+        color2: new THREE.Color(0x000000),
+        speed: 1.,
+        invert: 0.0,
+        step: 0.0,
+        noiseOption: 0.0,
+        yRotation:0.0,
+        zRotation:0.0
+      };
+    
+      const [isConnected, setIsConnected] = useState(false); // Connection status
+      
+    
+      // const ws = new WebSocket("http://localhost:8080");
+      
+        const ws = new WebSocket("wss://simple-websocket-test.onrender.com")
+    
+      useEffect(() => {
+        // const ws = new WebSocket("wss://simple-websocket-test.onrender.com")
+    
+        const gui = new GUI({
+          width: 300,
+        });
+        const folder = gui.addFolder("Noise Params");
+ 
+        const typeFolder = gui.addFolder("Noise Type");
+       
+        const minStep = folder.add(noiseParameters, "minStep", 0, 1, 0.1);
+        const maxStep = folder.add(noiseParameters, "maxStep", 0, 1, 0.1);
+        const frequency = folder.add(noiseParameters, "frequency", 0, 5.0, 0.2);
+        const color1 = folder.addColor(noiseParameters, "color1");
+        const color2 = folder.addColor(noiseParameters, "color2");
+        const speed = folder.add(noiseParameters, "speed", 0, 10.0, 1.0);
+        const invert = folder.add(noiseParameters, "invert", false);
+    
+        const step = folder.add(noiseParameters, "step", false);
+    
+        var pos1 = typeFolder
+          .add(noiseType, "perlin")
+          .name("perlin")
+          .listen()
+          .onChange(function () {
+            const noiseOption = setChecked("perlin");
+            ws.send(JSON.stringify({noiseOption:noiseOption}));
+          });
+        var neg1 = typeFolder
+          .add(noiseType, "voronoi")
+          .name("voronoi")
+          .listen()
+          .onChange(function () {
+            const noiseOption = setChecked("voronoi");
+            ws.send(JSON.stringify({noiseOption:noiseOption}));
+          });
+        var neu1 = typeFolder
+          .add(noiseType, "warped")
+          .name("warped")
+          .listen()
+          .onChange(function () {
+            const noiseOption = setChecked("warped");
+          
+            ws.send(JSON.stringify({noiseOption:noiseOption}));
+          });
+    
+        minStep.onChange((value) => {
+                 
+          ws.send(JSON.stringify({minStep:value }));
+        });
+    
+        maxStep.onChange((value) => {
+                 
+          ws.send(JSON.stringify({maxStep:value}));
+        });
+    
+        frequency.onChange((value) => {
+           
+          ws.send(JSON.stringify({frequency:value}));
+        });
+        color1.onChange((value) => {
+          // mesh.current.material.uniforms.color1.value = new THREE.Color(value);
+ 
+          ws.send(JSON.stringify({color1:  new THREE.Color(value)}));
+        });
+    
+        color2.onChange((value) => {
+          // mesh.current.material.uniforms.color2.value = new THREE.Color(value);
+        
+          ws.send(JSON.stringify({color2:  new THREE.Color(value)}));
+        });
+    
+        speed.onChange((value) => {
+          ws.send(JSON.stringify({speed:value}));
+     
+        });
+
+ 
+        invert.onChange((value) => {
+    
+          
+          // mesh.current.material.uniforms.invert.value = value ? 1.0 : 0.0;
+        
+         
+          ws.send(JSON.stringify({speed:value ? 1.0 : 0.0}));
+        });
+    
+        step.onChange((value) => {
+      
+          ws.send(JSON.stringify({step:value ? 1.0 : 0.0}));
+ 
+        });
+    
+        return () => {
+          gui.destroy();
+        };
+      }, []);
+    
+      //initial values
+      const uniforms = useMemo(
+        () => ({
+          time: {
+            value: 0.0,
+          },
+          minStep: {
+            value: 0.1,
+          },
+          maxStep: {
+            value: 0.6,
+          },
+          frequency: {
+            value: 1.0,
+          },
+          color1: { value: new THREE.Color(0xffffff) },
+          color2: { value: new THREE.Color(0x000000) },
+          speed: {
+            value: 1.0,
+          },
+          invert: {
+            value: 0.0,
+          },
+          step: {
+            value: 0.0,
+          },
+          noiseOption: {
+            value: 0.0,
+          },
+        }),
+        []
+      );
+    
+      useEffect(() => {
+        ws.onopen = () => {
+          console.log("WebSocket connection established");
+          setIsConnected(true);
+        };
+    
+        ws.addEventListener("open", () => {
+          console.log("we are connected!");
+      
+    
+          // ws.send(JSON.stringify(jsonData));
+    
+          ws.onmessage = (event) => {
+            // // const message = JSON.parse(event.data).data.height;
+            console.log("a message is sent!");
+            const message = JSON.parse(event.data);
+    
+           
+              if (mesh.current != null) {
+                mesh.current.material.uniforms.frequency.value =
+                 message.frequency;
+    
+                mesh.current.material.uniforms.minStep.value = message.minStep;
+    
+                mesh.current.material.uniforms.maxStep.value =message.maxStep;
+                
+                mesh.current.material.uniforms.color1.value = new THREE.Color(message.color1);
+                mesh.current.material.uniforms.color2.value = new THREE.Color(message.color2);
+                mesh.current.material.uniforms.speed.value =message.speed;
+                mesh.current.material.uniforms.invert.value =message.invert;
+                mesh.current.material.uniforms.step.value = message.step;
+                mesh.current.material.uniforms.noiseOption.value = message.noiseOption;
+           
+              }
+
+            mesh.current.rotation.y = (message.yRotation * Math.PI) / 180
+            
+
+ 
+            mesh.current.rotation.z = (message.zRotation * Math.PI)/180
+    
+              console.log(message);
+            
+          };
+        });
+      }, []);
+
+    
     const { viewport, camera, size } = useThree(); // Access the viewport and camera details
     const [planeSize, setPlaneSize] = useState([1, 1]); // State to store plane size
     const updatePlaneSize = () => {
@@ -452,12 +694,14 @@ export default function Square({ props, mesh, uniforms }) {
             scale={1}
         />
         <OrbitControls />
-
-
-        <mesh ref={mesh} rotation={[-Math.PI / 2, 0, 0]}>
+ 
+        <mesh ref={mesh} rotation={[-Math.PI / 2,0,0]}>
             <planeGeometry args={[10, 10, 1000, 1000]} />
             <shaderMaterial fragmentShader={fragmentShader} vertexShader={vertexShader2} uniforms={uniforms} transparent={true} emissiveIntensity={10.0} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
         </mesh>
+
+
+        
     </>
 
     )
