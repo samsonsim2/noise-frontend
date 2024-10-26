@@ -484,7 +484,7 @@ export default function Square({ props }) {
           const gui = new GUI({
             width: 300,
           }); 
-          
+          gui.hide()
           const folder = gui.addFolder("Noise Params");
           const typeFolder = gui.addFolder("Noise Type");
       

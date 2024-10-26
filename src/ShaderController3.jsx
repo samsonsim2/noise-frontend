@@ -109,10 +109,10 @@ const ShaderController2 = () => {
   const changeSpeed = () => {
     console.log("changefreq");
     const newSpeed = isSpeedIncreasing
-      ? initialValues.speed + 2
-      : initialValues.speed - 2;
+      ? initialValues.speed + 4
+      : initialValues.speed - 4;
 
-    if (newSpeed > 12) {
+    if (newSpeed > 16) {
       setIsSpeedIncreasing(false); // Start subtracting
     } else if (newSpeed < 2) {
       setIsSpeedIncreasing(true); // Start adding
@@ -185,48 +185,25 @@ const ShaderController2 = () => {
       console.error("Error sending message:", error);
     }
   };
-  const [minValue, setMinValue] = useState(0);
-  const [maxValue, setMaxValue] = useState(0);
-  const handleMinValue = (e) => {
-    try {
-      // Check if the WebSocket connection is open
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ minStep: e.target.value }));
-      } else {
-        console.log("WebSocket is not open. Current state:", ws.readyState);
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
+  const [value, setValue] = useState(50);
 
-  const handleMaxValue = (e) => {
-    try {
-      // Check if the WebSocket connection is open
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ maxStep: e.target.value }));
-      } else {
-        console.log("WebSocket is not open. Current state:", ws.readyState);
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
+  const handleChange = (e) => {
+    setValue(e.target.value);
   };
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr 1fr", // 4 columns
-        gridTemplateRows: "1fr 1fr 1fr", // 3 rows
-
+        gridTemplateColumns: "repeat(4, 1fr)", // 4 equal columns
         height: "100vh",
         boxSizing: "border-box",
 
         gap: "10px", // Space between grid items
         padding: "20px",
+        
       }}
     >
-      {/* First row */}
+      {/* First Row - 4 squares with circular buttons */}
       <div
         style={{
           backgroundColor: "#f0f0f0",
@@ -238,8 +215,9 @@ const ShaderController2 = () => {
           borderRadius: "8px",
         }}
       >
-        {" "}
-        {/* /   <button
+        {/* <RoundButton/> */}
+
+        <button
           onClick={() => {
             changeFrequency();
           }}
@@ -252,35 +230,8 @@ const ShaderController2 = () => {
             color: "white",
             cursor: "pointer",
           }}
-        > */}
-        <button
-          onClick={() => {
-            changeFrequency();
-          }}
-          style={{
-            width: '200px',
-            height: '200px',
-            backgroundColor: 'white',
-            color: 'white',
-            border: 'none',
-            borderRadius: '100%',
-            transform: `rotate(${(initialValues.frequency/5) * 360}deg)`,
-            transition: 'transform 0.3s ease',
-            position:'relative',
-            padding:'10px'
-          }}
         >
-         <div
-          style={{
-            width: "15px", // Inner circle diameter
-            height: "15px",
-            backgroundColor: "grey", // Inner circle color
-            borderRadius: "50%", // Makes it circular
-            position: "absolute", // Allows for positioning within the outer circle
-            top: "50%", // Center vertically
-            transform: "translateY(-50%) translateY(-10px)", // Offset slightly up
-          }}
-        />
+          {initialValues.frequency}
         </button>
       </div>
       <div
@@ -294,7 +245,34 @@ const ShaderController2 = () => {
           borderRadius: "8px",
         }}
       >
-        {" "}
+        <button
+          onClick={() => {
+            changeSpeed();
+          }}
+          style={{
+            width: "100px",
+            height: "100px",
+            borderRadius: "50%",
+            border: "none",
+            backgroundColor: "#007BFF",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          {initialValues.speed}
+        </button>
+      </div>
+      <div
+        style={{
+          backgroundColor: "#f0f0f0",
+          padding: "20px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          borderRadius: "8px",
+        }}
+      >
         <input
           type="color"
           value={initialValues.color1}
@@ -322,54 +300,11 @@ const ShaderController2 = () => {
           }}
         />
       </div>
+
       <div
         style={{
           backgroundColor: "#f0f0f0",
-          borderRadius:'8px',
-          gridRow: "1 / span 2",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 30,
-        }}
-      >
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step={0.1}
-          value={initialValues.minStep}
-          onChange={handleMinValue}
-          style={{
-            writingMode: "bt-lr", // Rotate to make it vertical
-            WebkitAppearance: "slider-vertical", // Style for webkit browsers
-            width: "8px",
-            height: "85%",
-            backgroundColor: "#ddd",
-            outline: "none",
-          }}
-        />
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step={0.1}
-          value={initialValues.maxStep}
-          onChange={handleMaxValue}
-          style={{
-            writingMode: "bt-lr", // Rotate to make it vertical
-            WebkitAppearance: "slider-vertical", // Style for webkit browsers
-            width: "8px",
-            height: "85%",
-            backgroundColor: "#ddd",
-            outline: "none",
-          }}
-        />
-      </div>
-      <div
-        style={{
-          backgroundColor: "#f0f0f0",
-          padding: "20px",
+          padding: "10px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -406,7 +341,7 @@ const ShaderController2 = () => {
         </div>
       </div>
 
-      {/* Second row */}
+      {/* Second Row - 4 squares with circular buttons */}
       <div
         style={{
           backgroundColor: "#f0f0f0",
@@ -418,35 +353,18 @@ const ShaderController2 = () => {
           borderRadius: "8px",
         }}
       >
-        {" "}
         <button
-          onClick={() => {
-            changeSpeed();
-          }}
           style={{
-            width: '200px',
-            height: '200px',
-            backgroundColor: 'white',
-            color: 'white',
-            border: 'none',
-            borderRadius: '100%',
-            transform: `rotate(${(initialValues.speed/12) * 360}deg)`,
-            transition: 'transform 0.3s ease',
-            position:'relative',
-            padding:'10px'
+            width: "100px",
+            height: "100px",
+            borderRadius: "50%",
+            border: "none",
+            backgroundColor: "#007BFF",
+            color: "white",
+            cursor: "pointer",
           }}
         >
-         <div
-          style={{
-            width: "15px", // Inner circle diameter
-            height: "15px",
-            backgroundColor: "grey", // Inner circle color
-            borderRadius: "50%", // Makes it circular
-            position: "absolute", // Allows for positioning within the outer circle
-            top: "50%", // Center vertically
-            transform: "translateY(-50%) translateY(-10px)", // Offset slightly up
-          }}
-        />
+          5
         </button>
       </div>
       <div
@@ -460,7 +378,33 @@ const ShaderController2 = () => {
           borderRadius: "8px",
         }}
       >
-        {" "}
+    <input
+        type="range"
+        min="0"
+        max="100"
+        value={value}
+        onChange={handleChange}
+        style={{
+          writingMode: "bt-lr", // Rotate to make it vertical
+          WebkitAppearance: "slider-vertical", // Style for webkit browsers
+          width: "8px",
+          height: "300px",
+          backgroundColor: "#ddd",
+          outline: "none",
+        }}
+      />
+      </div>
+      <div
+        style={{
+          backgroundColor: "#f0f0f0",
+          padding: "20px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          borderRadius: "8px",
+        }}
+      >
         <input
           type="color"
           value={initialValues.color2}
@@ -528,7 +472,7 @@ const ShaderController2 = () => {
         </div>
       </div>
 
-      {/* Third row */}
+      {/* Third Row - First column spans 3 columns */}
       <div
         style={{
           position: "relative",
@@ -539,12 +483,10 @@ const ShaderController2 = () => {
           alignItems: "center",
           textAlign: "center",
           borderRadius: "8px",
-         
-          gridColumn: "1 / span 3",
-          position:'relative'
+          gridColumn: "span 3",
         }}
       >
-         <div
+        <div
           style={{
             position: "absolute",
             width: "80%",
@@ -584,6 +526,7 @@ const ShaderController2 = () => {
             </div>
           ))}
         </div>
+        {/* <p>Current Step: {step}</p> */}
       </div>
       <div
         style={{
@@ -601,9 +544,39 @@ const ShaderController2 = () => {
       >
         Reset
       </div>
-   
     </div>
   );
+
+  //   return (
+  //     <div style={{ position: "relative", display: "inline-block" }}>
+  //       {/* Hidden native input */}
+  //       <input
+  //         type="color"
+  //         value={color}
+  //         onChange={handleColorChange}
+  //         style={{
+  //           opacity: 0, // Hide the default input element
+  //           position: "absolute",
+  //           width: "50px", // Ensure the input is the same size as the custom circle
+  //           height: "50px",
+  //           cursor: "pointer", // Ensure it's clickable
+  //         }}
+  //       />
+  //       {/* Custom color display */}
+  //       <div
+  //         style={{
+  //           width: "50px",
+  //           height: "50px",
+  //           borderRadius: "50%", // Make it circular
+  //           backgroundColor: color, // Fill with selected color
+  //           border: "2px solid transparent", // Optional: transparent border for smoothness
+  //           boxShadow: "0 0 5px rgba(0, 0, 0, 0.2)", // Optional: add a subtle shadow
+  //           cursor: "pointer", // Pointer cursor for better UX
+  //         }}
+  //       />
+
+  //     </div>
+  //   );
 };
 
 export default ShaderController2;
