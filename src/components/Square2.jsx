@@ -643,6 +643,7 @@ export default function Square({ props,yRotation,zRotation}) {
               }
 
             mesh.current.rotation.y = (message.yRotation * Math.PI) / 180
+            mesh.current.scale = message.scale
             
 
  
@@ -696,7 +697,7 @@ export default function Square({ props,yRotation,zRotation}) {
         />
         <OrbitControls />
  
-        <mesh ref={mesh} rotation={[-Math.PI / 2,0,0]}>
+        <mesh ref={mesh} rotation={[-Math.PI / 2,0,0]} scale={1.0}>
             <planeGeometry args={[10, 10, 1000, 1000]} />
             <shaderMaterial fragmentShader={fragmentShader} vertexShader={vertexShader2} uniforms={uniforms} transparent={true} emissiveIntensity={10.0} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
         </mesh>

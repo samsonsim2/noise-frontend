@@ -1,110 +1,195 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 const PositionController = () => {
   // const ws = new WebSocket("http://localhost:8080");
   // const [yRotation, setYRotation] = useState(0)
   // const [zRotation, setZRotation] = useState(0)
   const ws = new WebSocket("wss://simple-websocket-test.onrender.com")
-  let yRotation = 0 
-  let zRotation = 0 
+
+
+  const [initialValues, setInitialValues] = useState({
+    yRotation: 0.0,
+    zRotation: 0.0,
+    scale: 1.0,
+  });
   function handleY(type) {
 
-    if(type=="increment"){
-      yRotation = (yRotation + 20) %360
-      ws.send(JSON.stringify({yRotation: yRotation}));
-  
-      
+    if (type == "increment") {
+      let yRotation = (initialValues.yRotation + 20) % 360
+      ws.send(JSON.stringify({ yRotation: yRotation }));
+
+
     }
 
-    
-    if(type=="decrement"){
-      yRotation = (yRotation -20) %360
-      ws.send(JSON.stringify({yRotation: yRotation}));
+
+    if (type == "decrement") {
+      let yRotation = (initialValues.yRotation - 20) % 360
+      ws.send(JSON.stringify({ yRotation: yRotation }));
     }
- 
+
   }
 
   function handleZ(type) {
 
-    if(type=="increment"){
-      zRotation = (zRotation + 20) %360
-      ws.send(JSON.stringify({zRotation: zRotation}));
-  
-      
+    if (type == "increment") {
+      let zRotation = (initialValues.zRotation + 20) % 360
+      ws.send(JSON.stringify({ zRotation: zRotation }));
+
+
     }
 
-    
-    if(type=="decrement"){
-      zRotation = (zRotation -20) %360
-      ws.send(JSON.stringify({zRotation: zRotation}));
+
+    if (type == "decrement") {
+      let zRotation = (initialValues.zRotation - 20) % 360
+      ws.send(JSON.stringify({ zRotation: zRotation }));
     }
- 
+
+  }
+
+  function reset() {
+    ws.send(JSON.stringify({ yRotation: 0, zRotation: 0 }));
+  }
+
+  function handleScale(type) {
+
+    if (type == "increment") {
+      let scale = initialValues.scale + 0.2
+      ws.send(JSON.stringify({ scale: scale }));
+
+
+    }
+
+
+    if (type == "decrement") {
+      let scale = initialValues.scale - 0.2
+      ws.send(JSON.stringify({ scale: scale }));
+    }
+
   }
 
 
- 
+  useEffect(() => {
+    ws.onopen = () => {
+      console.log("WebSocket connection established");
+    };
+
+    ws.addEventListener("open", () => {
+      console.log("we are connected!");
+
+      ws.onmessage = (event) => {
+        console.log("a message is sent!");
+        const message = JSON.parse(event.data);
+        setInitialValues(message);
+
+        console.log(message);
+      };
+    });
+  }, []);
 
   return (
-    <div
-
-      style={{
-        position: 'relative',
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <button    onClick={()=>handleY("decrement")}
-       
+    <div style={{ position: 'relative', height: '100vh', width: '100vw', backgroundColor: "#f0f0f0", }}>
+      {/* Positioning buttons at the corners */}
+      <button
         style={{
+          width: '100px',
+          height: '100px',
+          padding: '10px',
+          border: 'none',
+
+          borderRadius: '100%',
+          backgroundColor: 'white',
           position: 'absolute',
-          top: 0,
+          top: '20px',
           left: '50%',
           transform: 'translateX(-50%)',
         }}
+        onClick={() => handleY("decrement")}
+
       >
-        Top
+        <KeyboardArrowUpIcon />
       </button>
 
       <button
- onClick={()=>handleY("increment")}
         style={{
+          width: '100px',
+          height: '100px',
+          padding: '10px',
+          border: 'none',
+
+          borderRadius: '100%',
+          backgroundColor: 'white',
           position: 'absolute',
-          bottom: 0,
+          top: '50%',
+          right: '20px',
+          transform: 'translateY(-50%)',
+        }}
+        onClick={() => handleZ("increment")}
+
+      >
+        <KeyboardArrowRightIcon />
+      </button>
+
+      <button
+        style={{
+          width: '100px',
+          height: '100px',
+          padding: '10px',
+          border: 'none',
+
+          borderRadius: '100%',
+          backgroundColor: 'white',
+          position: 'absolute',
+          bottom: '20px',
           left: '50%',
           transform: 'translateX(-50%)',
         }}
+        onClick={() => handleY("increment")}
+
       >
-        Bottom
+        <KeyboardArrowDownIcon />
       </button>
 
       <button
-       onClick={()=>handleZ("decrement")}
-
         style={{
+          width: '100px',
+          height: '100px',
+          padding: '10px',
+          border: 'none',
+
+          borderRadius: '100%',
+          backgroundColor: 'white',
           position: 'absolute',
-          left: 0,
           top: '50%',
+          left: '20px',
           transform: 'translateY(-50%)',
         }}
+        onClick={() => handleZ("decrement")}
+
       >
-        Left
+        <KeyboardArrowLeftIcon />
       </button>
 
-      <button
-           onClick={()=>handleZ("increment")}
+      {/* Center buttons */}
+      <div
         style={{
           position: 'absolute',
-          right: 0,
           top: '50%',
-          transform: 'translateY(-50%)',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          display: 'flex',
+          gap: '10px',
         }}
       >
-        Right
-      </button>
+        <button onClick={()=>{handleScale("increment")}} style={{ fontSize: "30px", padding: "20px", width: "150px", height: "150px", borderRadius: "8px" }}>+</button>
+        <button onClick={() => { reset() }} style={{ fontSize: "30px", padding: "20px", width: "150px", height: "150px", borderRadius: "8px" }}>Reset</button>
+        <button onClick={()=>{handleScale("decrement")}} style={{ fontSize: "30px", padding: "20px", width: "150px", height: "150px", borderRadius: "8px" }}>-</button>
+      </div>
     </div>
-  )
+  );
 }
 
 export default PositionController
