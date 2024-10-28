@@ -93,22 +93,45 @@ const PositionController = () => {
   }
 
   function reset() {
-    ws.send(JSON.stringify({ yRotation: 0, zRotation: 0 }));
+    ws.send(JSON.stringify({ yRotation: 0, zRotation: 0 ,scale : 1.0}));
   }
 
   function handleScale(type) {
 
-    if (type == "increment") {
-      let scale = initialValues.scale + 0.2
-      ws.send(JSON.stringify({ scale: scale }));
+    if (type == "increment" && initialValues.scale < 5) {
+
+      try {
+        // Check if the WebSocket connection is open
+        if (ws.readyState === WebSocket.OPEN) {
+          let scale = initialValues.scale + 0.2
+          ws.send(JSON.stringify({ scale: scale }));
+        } else {
+          console.log("WebSocket is not open. Current state:", ws.readyState);
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    
+    
 
 
     }
 
 
-    if (type == "decrement") {
-      let scale = initialValues.scale - 0.2
-      ws.send(JSON.stringify({ scale: scale }));
+    if (type == "decrement" && initialValues.scale >  1) {
+      try {
+        // Check if the WebSocket connection is open
+        if (ws.readyState === WebSocket.OPEN) {
+          let scale = initialValues.scale - 0.2
+          ws.send(JSON.stringify({ scale: scale }));
+        } else {
+          console.log("WebSocket is not open. Current state:", ws.readyState);
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    
+    
     }
 
   }
