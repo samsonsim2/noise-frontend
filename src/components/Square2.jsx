@@ -643,7 +643,7 @@ export default function Square({ props,yRotation,zRotation}) {
               }
 
             mesh.current.rotation.y = (message.yRotation * Math.PI) / 180
-            mesh.current.scale = message.scale
+            mesh.current.scale.set(message.scale,message.scale,message.scale)
             
 
  

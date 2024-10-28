@@ -19,16 +19,37 @@ const PositionController = () => {
   function handleY(type) {
 
     if (type == "increment") {
-      let yRotation = (initialValues.yRotation + 20) % 360
-      ws.send(JSON.stringify({ yRotation: yRotation }));
+
+      try {
+        // Check if the WebSocket connection is open
+        if (ws.readyState === WebSocket.OPEN) {
+          let yRotation = (initialValues.yRotation + 20) % 360
+          ws.send(JSON.stringify({ yRotation: yRotation }));
+        } else {
+          console.log("WebSocket is not open. Current state:", ws.readyState);
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    
 
 
     }
 
 
     if (type == "decrement") {
-      let yRotation = (initialValues.yRotation - 20) % 360
-      ws.send(JSON.stringify({ yRotation: yRotation }));
+      try {
+        // Check if the WebSocket connection is open
+        if (ws.readyState === WebSocket.OPEN) {
+          let yRotation = (initialValues.yRotation - 20) % 360
+          ws.send(JSON.stringify({ yRotation: yRotation }));
+        } else {
+          console.log("WebSocket is not open. Current state:", ws.readyState);
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    
     }
 
   }
@@ -36,16 +57,37 @@ const PositionController = () => {
   function handleZ(type) {
 
     if (type == "increment") {
-      let zRotation = (initialValues.zRotation + 20) % 360
-      ws.send(JSON.stringify({ zRotation: zRotation }));
+
+      try {
+        // Check if the WebSocket connection is open
+        if (ws.readyState === WebSocket.OPEN) {
+          let zRotation = (initialValues.zRotation + 20) % 360
+          ws.send(JSON.stringify({ zRotation: zRotation }));
+        } else {
+          console.log("WebSocket is not open. Current state:", ws.readyState);
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    
+     
 
 
     }
 
 
     if (type == "decrement") {
-      let zRotation = (initialValues.zRotation - 20) % 360
-      ws.send(JSON.stringify({ zRotation: zRotation }));
+      try {
+        // Check if the WebSocket connection is open
+        if (ws.readyState === WebSocket.OPEN) {
+          let zRotation = (initialValues.zRotation -  20) % 360
+          ws.send(JSON.stringify({ zRotation: zRotation }));
+        } else {
+          console.log("WebSocket is not open. Current state:", ws.readyState);
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
     }
 
   }
