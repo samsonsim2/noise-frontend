@@ -55,7 +55,7 @@ const ShaderController2 = () => {
     time: 0.0,
     minStep: 0.1,
     maxStep: 0.6,
-    frequency: 1.0,
+    frequency: 0.5,
     color1: 143613,
     color2: 14350592,
     speed: 1,
@@ -88,7 +88,7 @@ const ShaderController2 = () => {
       ? initialValues.frequency + 0.5
       : initialValues.frequency - 0.5;
 
-    if (newFrequency > 3) {
+    if (newFrequency > 2) {
       setIsIncreasing(false); // Start subtracting
     } else if (newFrequency < 0.5) {
       setIsIncreasing(true); // Start adding
@@ -112,7 +112,7 @@ const ShaderController2 = () => {
       ? initialValues.speed + 2
       : initialValues.speed - 2;
 
-    if (newSpeed > 12) {
+    if (newSpeed > 8) {
       setIsSpeedIncreasing(false); // Start subtracting
     } else if (newSpeed < 2) {
       setIsSpeedIncreasing(true); // Start adding
@@ -264,7 +264,7 @@ const ShaderController2 = () => {
             color: 'white',
             border: 'none',
             borderRadius: '100%',
-            transform: `rotate(${(initialValues.frequency/3) * 360}deg)`,
+            transform: `rotate(${(initialValues.frequency/2) * 360}deg)`,
             transition: 'transform 0.3s ease',
             position:'relative',
             padding:'10px'
@@ -430,7 +430,7 @@ const ShaderController2 = () => {
             color: 'white',
             border: 'none',
             borderRadius: '100%',
-            transform: `rotate(${(initialValues.speed/12) * 360}deg)`,
+            transform: `rotate(${(initialValues.speed/8) * 360}deg)`,
             transition: 'transform 0.3s ease',
             position:'relative',
             padding:'10px'
