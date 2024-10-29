@@ -30,6 +30,33 @@ vec3 hash( vec3 p ) // replace this by something better
 	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
 }
 
+vec2 hash2(vec2 p) {
+    return fract(sin(vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)))) * 43758.5453);
+}
+
+float cellular2(vec3 uvw) {
+    vec2 i = floor(uvw.xy);
+    vec2 f = fract(uvw.xy);
+    float minDist = 1.0;
+
+    for (int y = -1; y <= 1; y++) {
+        for (int x = -1; x <= 1; x++) {
+            vec2 neighbor = vec2(x, y);
+            vec2 point = hash2(i + neighbor);
+            vec2 diff = neighbor + point - f;
+
+            // Simple time-based offset for animation
+            diff += uvw.z * 0.1;
+            float dist = dot(diff, diff);
+
+            minDist = min(minDist, dist);
+        }
+    }
+
+    return sqrt(minDist);
+}
+
+
 float noise( in vec3 p )
 {
     vec3 i = floor( p );
@@ -166,10 +193,10 @@ void main(void) {
     }
     else if(noiseOption == 1.0){
        if(invert == 1.0){
-     noiseSample =  1.0- cellular(coords * frequency );
+     noiseSample =  1.0- cellular2(coords * frequency );
     }
     else if(invert == 0.0){
-     noiseSample =  cellular(coords * frequency );
+     noiseSample =  cellular2(coords * frequency );
     }
     }
      else if(noiseOption == 2.0){
@@ -308,6 +335,8 @@ float ridgedFBM(vec3 p, int octaves, float persistence, float lacunarity){
 }
 
 //voronoi
+
+
 float cellular(vec3 coords){
 vec2 gridBasePosition = floor(coords.xy);
 vec2 gridCoordOffset = fract(coords.xy);
