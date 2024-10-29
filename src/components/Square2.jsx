@@ -29,30 +29,17 @@ vec3 hash( vec3 p ) // replace this by something better
 
 	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
 }
-vec2 hash2(vec2 p) {
-    return fract(sin(p * vec2(127.1, 311.7)) * 43758.5453);
+vec2 hexOffset(vec2 p) {
+    float q = sqrt(3.0) / 2.0;
+    vec2 hex = vec2(1.0, q);
+
+    // Convert Cartesian coordinates to a hexagonal grid
+    vec2 uv = vec2(p.x / hex.x, (p.y - mod(floor(p.x), 2.0) * 0.5) / hex.y);
+    return floor(uv);
 }
 
-float cellular2(vec3 uvw) {
-    vec2 i = floor(uvw.xy);
-    vec2 f = fract(uvw.xy);
-    float minDist = 1.0;
-
-    for (int y = -1; y <= 1; y++) {
-        for (int x = -1; x <= 1; x++) {
-            vec2 neighbor = vec2(x, y);
-            vec2 point = hash2(i + neighbor); 
-            
-            // Add a time-based offset to animate the cells
-            point += 0.5 * sin(uvw.z + point.x + point.y); 
-            
-            vec2 diff = neighbor + point - f;
-            float dist = dot(diff, diff);
-            minDist = min(minDist, dist);
-        }
-    }
-
-    return sqrt(minDist);
+vec2 hash2(vec2 p) {
+    return fract(sin(p * vec2(127.1, 311.7)) * 43758.5453);
 }
 
 
@@ -76,7 +63,33 @@ float noise( in vec3 p )
                           dot( hash( i + vec3(1.0,1.0,1.0) ), f - vec3(1.0,1.0,1.0) ), u.x), u.y), u.z );
 }
  
- 
+ float cellular2(vec3 coords) {
+    vec2 gridBasePosition = floor(coords.xy);
+    vec2 gridCoordOffset = fract(coords.xy);
+    
+    float closest = 1.0;
+    vec2 offsets[5] = vec2[](
+        vec2(-1.0, -1.0), vec2(0.0, -1.0), vec2(1.0, -1.0),
+        vec2(-1.0, 0.0), vec2(0.0, 0.0)
+    );
+    
+    for (int i = 0; i < 5; i++) {
+        vec2 neighbourCellPosition = offsets[i];
+        vec2 cellWorldPosition = gridBasePosition + neighbourCellPosition;
+
+        vec2 cellOffset = vec2(
+            noise(vec3(cellWorldPosition, coords.z) + vec3(243.32, 324.235, 0.0)),
+            noise(vec3(cellWorldPosition, coords.z))
+        );
+
+        vec2 diff = neighbourCellPosition + cellOffset - gridCoordOffset;
+        float distSquared = dot(diff, diff);  // Use squared distance
+        if (distSquared < closest) {
+            closest = distSquared;
+        }
+    }
+    return sqrt(closest);  // Return the actual distance if needed
+}
 float fbm(vec3 p, int octaves, float persistence, float lacunarity){
     float amplitude = 0.01;
     float frequency = frequency;
@@ -246,35 +259,20 @@ uniform float maxStep;
 uniform float step;
 uniform float noiseOption;
 
+vec2 hexOffset(vec2 p) {
+    float q = sqrt(3.0) / 2.0;
+    vec2 hex = vec2(1.0, q);
 
- vec2 hash2(vec2 p) {
+    // Convert Cartesian coordinates to a hexagonal grid
+    vec2 uv = vec2(p.x / hex.x, (p.y - mod(floor(p.x), 2.0) * 0.5) / hex.y);
+    return floor(uv);
+}
+
+vec2 hash2(vec2 p) {
     return fract(sin(p * vec2(127.1, 311.7)) * 43758.5453);
 }
 
-float cellular2(vec3 uvw) {
-    vec2 i = floor(uvw.xy);
-    vec2 f = fract(uvw.xy);
-    float minDist = 1.0;
 
-    for (int y = -1; y <= 1; y++) {
-        for (int x = -1; x <= 1; x++) {
-            vec2 neighbor = vec2(x, y);
-            vec2 point = hash2(i + neighbor); 
-            
-            // Add a time-based offset to animate the cells
-            point += 0.5 * sin(uvw.z + point.x + point.y); 
-            
-            vec2 diff = neighbor + point - f;
-            float dist = dot(diff, diff);
-            minDist = min(minDist, dist);
-        }
-    }
-
-    return sqrt(minDist);
-}
-
-
- 
  
  
 vec3 hash( vec3 p ) // replace this by something better
@@ -305,6 +303,35 @@ float noise( in vec3 p )
                      mix( dot( hash( i + vec3(0.0,1.0,1.0) ), f - vec3(0.0,1.0,1.0) ), 
                           dot( hash( i + vec3(1.0,1.0,1.0) ), f - vec3(1.0,1.0,1.0) ), u.x), u.y), u.z );
 }
+ 
+float cellular2(vec3 coords) {
+    vec2 gridBasePosition = floor(coords.xy);
+    vec2 gridCoordOffset = fract(coords.xy);
+    
+    float closest = 1.0;
+    vec2 offsets[5] = vec2[](
+        vec2(-1.0, -1.0), vec2(0.0, -1.0), vec2(1.0, -1.0),
+        vec2(-1.0, 0.0), vec2(0.0, 0.0)
+    );
+    
+    for (int i = 0; i < 5; i++) {
+        vec2 neighbourCellPosition = offsets[i];
+        vec2 cellWorldPosition = gridBasePosition + neighbourCellPosition;
+
+        vec2 cellOffset = vec2(
+            noise(vec3(cellWorldPosition, coords.z) + vec3(243.32, 324.235, 0.0)),
+            noise(vec3(cellWorldPosition, coords.z))
+        );
+
+        vec2 diff = neighbourCellPosition + cellOffset - gridCoordOffset;
+        float distSquared = dot(diff, diff);  // Use squared distance
+        if (distSquared < closest) {
+            closest = distSquared;
+        }
+    }
+    return sqrt(closest);  // Return the actual distance if needed
+}
+
  
  
 float fbm(vec3 p, int octaves, float persistence, float lacunarity){
