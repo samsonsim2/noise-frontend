@@ -169,7 +169,7 @@ const ShaderController2 = () => {
           JSON.stringify({
             minStep: 0.1,
             maxStep: 0.6,
-            frequency: 1.0,
+            frequency: 0.5,
             color1: 143613,
             color2: 14350592,
             speed: 1,
@@ -264,7 +264,7 @@ const ShaderController2 = () => {
             color: 'white',
             border: 'none',
             borderRadius: '100%',
-            transform: `rotate(${(initialValues.frequency/5) * 360}deg)`,
+            transform: `rotate(${(initialValues.frequency/3) * 360}deg)`,
             transition: 'transform 0.3s ease',
             position:'relative',
             padding:'10px'
