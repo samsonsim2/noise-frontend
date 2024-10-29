@@ -174,20 +174,31 @@ float stepped(float noiseSample){
 }
 
 float domainWarpingFBM(vec3 coords){
-vec3 offset =  vec3(
-fbm(coords,4,0.5,2.0),
-fbm(coords + vec3(43.235,23.112,0.0),4,0.5,2.0), 0.0
-);
+// Precomputed offsets to reduce recalculations and number of noise samples
+    vec3 baseOffset = vec3(43.235, 23.112, 0.0);
+    vec3 offsetMultiplier1 = vec3(5.325, 1.421, 3.235);
+    vec3 offsetMultiplier2 = vec3(4.32, 0.532, 6.324);
 
-float noiseSample = fbm(coords + offset , 1,0.5,2.0);
+    // First domain-warping layer
+    vec3 offset = vec3(
+        fbm(coords, 3, 0.5, 2.0),  // Reduced to 3 octaves
+        fbm(coords + baseOffset, 3, 0.5, 2.0),
+        0.0
+    );
 
-vec3 offset2 = vec3(
-fbm(coords +4.0 * offset +vec3(5.325,1.421,3.235),4,0.5,2.0),
-fbm(coords +4.0 * offset +vec3(4.32,0.532,6.324),4,0.5,2.0),0.0);
+    float noiseSample = fbm(coords + offset, 1, 0.5, 2.0);  // Single octave for speed
 
-noiseSample = fbm(coords + 4.0 * offset2 , 1, 0.5, 2.0);
+    // Second domain-warping layer
+    vec3 offset2 = vec3(
+        fbm(coords + 4.0 * offset + offsetMultiplier1, 3, 0.5, 2.0),
+        fbm(coords + 4.0 * offset + offsetMultiplier2, 3, 0.5, 2.0),
+        0.0
+    );
 
-return noiseSample;
+    // Final FBM with reduced octaves and cached offsets
+    noiseSample = fbm(coords + 4.0 * offset2, 1, 0.5, 2.0);  // Single octave
+
+    return noiseSample;
 }
 
 
@@ -424,20 +435,31 @@ float stepped(float noiseSample){
 //originally it was 10.0 instead of 5.0
 
 float domainWarpingFBM(vec3 coords){
-vec3 offset =  vec3(
-fbm(coords,4,0.5,2.0),
-fbm(coords + vec3(43.235,23.112,0.0),4,0.5,2.0), 0.0
-);
+// Precomputed offsets to reduce recalculations and number of noise samples
+    vec3 baseOffset = vec3(43.235, 23.112, 0.0);
+    vec3 offsetMultiplier1 = vec3(5.325, 1.421, 3.235);
+    vec3 offsetMultiplier2 = vec3(4.32, 0.532, 6.324);
 
-float noiseSample = fbm(coords + offset , 1,0.5,2.0);
+    // First domain-warping layer
+    vec3 offset = vec3(
+        fbm(coords, 3, 0.5, 2.0),  // Reduced to 3 octaves
+        fbm(coords + baseOffset, 3, 0.5, 2.0),
+        0.0
+    );
 
-vec3 offset2 = vec3(
-fbm(coords +4.0 * offset +vec3(5.325,1.421,3.235),4,0.5,2.0),
-fbm(coords +4.0 * offset +vec3(4.32,0.532,6.324),4,0.5,2.0),0.0);
+    float noiseSample = fbm(coords + offset, 1, 0.5, 2.0);  // Single octave for speed
 
-noiseSample = fbm(coords + 4.0 * offset2 , 1, 0.5, 2.0);
+    // Second domain-warping layer
+    vec3 offset2 = vec3(
+        fbm(coords + 4.0 * offset + offsetMultiplier1, 3, 0.5, 2.0),
+        fbm(coords + 4.0 * offset + offsetMultiplier2, 3, 0.5, 2.0),
+        0.0
+    );
 
-return noiseSample;
+    // Final FBM with reduced octaves and cached offsets
+    noiseSample = fbm(coords + 4.0 * offset2, 1, 0.5, 2.0);  // Single octave
+
+    return noiseSample;
 }
 
 
