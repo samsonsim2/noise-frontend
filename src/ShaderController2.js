@@ -85,12 +85,12 @@ const ShaderController2 = () => {
   const changeFrequency = () => {
     console.log("changefreq");
     const newFrequency = isIncreasing
-      ? initialValues.frequency + 1
-      : initialValues.frequency - 1;
+      ? initialValues.frequency + 0.5
+      : initialValues.frequency - 0.5;
 
-    if (newFrequency > 5) {
+    if (newFrequency > 3) {
       setIsIncreasing(false); // Start subtracting
-    } else if (newFrequency < 2) {
+    } else if (newFrequency < 0.5) {
       setIsIncreasing(true); // Start adding
     }
 
