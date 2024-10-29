@@ -167,12 +167,11 @@ float map(float value, float min1, float max1, float min2, float max2) {
 }
 
 float stepped(float noiseSample){
-    float steppedSample = floor(noiseSample * 5.0)/5.0;
-    float remainder = fract(noiseSample * 5.0);
-    steppedSample = (steppedSample - remainder) * 0.5 + 0.5;
+    float steppedSample = floor(noiseSample * 2.0)/2.0;
+    float remainder = fract(noiseSample * 3.0);
+    steppedSample = (steppedSample - remainder) * 0.5+ 0.5;
     return steppedSample;
 }
-
 float domainWarpingFBM(vec3 coords){
 vec3 offset =  vec3(
 fbm(coords,4,0.5,2.0),
@@ -435,9 +434,9 @@ float map(float value, float min1, float max1, float min2, float max2) {
 }
 
 float stepped(float noiseSample){
-    float steppedSample = floor(noiseSample * 5.0)/5.0;
-    float remainder = fract(noiseSample * 5.0);
-    steppedSample = (steppedSample - remainder) * 0.5 + 0.5;
+    float steppedSample = floor(noiseSample * 2.0)/2.0;
+    float remainder = fract(noiseSample * 3.0);
+    steppedSample = (steppedSample - remainder) * 0.5+ 0.5;
     return steppedSample;
 }
 //originally it was 10.0 instead of 5.0
