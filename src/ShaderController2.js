@@ -85,10 +85,10 @@ const ShaderController2 = () => {
   const changeFrequency = () => {
     console.log("changefreq");
     const newFrequency = isIncreasing
-      ? initialValues.frequency + 0.2
-      : initialValues.frequency - 0.2;
+      ? initialValues.frequency + 0.1
+      : initialValues.frequency - 0.1;
 
-    if (newFrequency > 1.0) {
+    if (newFrequency > 0.8) {
       setIsIncreasing(false); // Start subtracting
     } else if (newFrequency < 0.2) {
       setIsIncreasing(true); // Start adding
@@ -264,7 +264,7 @@ const ShaderController2 = () => {
             color: 'white',
             border: 'none',
             borderRadius: '100%',
-            transform: `rotate(${(initialValues.frequency/1.0) * 360}deg)`,
+            transform: `rotate(${(initialValues.frequency/0.8) * 360}deg)`,
             transition: 'transform 0.3s ease',
             position:'relative',
             padding:'10px'
