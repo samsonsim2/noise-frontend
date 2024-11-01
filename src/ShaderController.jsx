@@ -76,7 +76,7 @@ const ShaderController = () => {
         time: 0.0,
         minStep: 0.1,
         maxStep: 0.6,
-        frequency: 1.0,
+        frequency:0.2,
         color1: 143613,
         color2: 14350592,
         speed: 1,
@@ -102,10 +102,10 @@ const ShaderController = () => {
             typeFolder.open()
             const minStep = folder.add(noiseParameters, "minStep", 0, 1, 0.1).setValue(initialValues.minStep);
             const maxStep = folder.add(noiseParameters, "maxStep", 0, 1, 0.1).setValue(initialValues.maxStep);
-            const frequency = folder.add(noiseParameters, "frequency", 0, 5.0, 0.2).setValue(initialValues.frequency);
+            const frequency = folder.add(noiseParameters, "frequency", 0.2, 1.0, 0.2).setValue(initialValues.frequency);
             const color1 = folder.addColor(noiseParameters, "color1").setValue(initialValues.color1);
             const color2 = folder.addColor(noiseParameters, "color2").setValue(initialValues.color2);
-            const speed = folder.add(noiseParameters, "speed", 0, 10.0, 1.0).setValue(initialValues.speed);
+            const speed = folder.add(noiseParameters, "speed", 2,8.0, 1.0).setValue(initialValues.speed);
             const invert = folder.add(noiseParameters, "invert", false).setValue(initialValues.invert ? true : false);
             const step = folder.add(noiseParameters, "step", false).setValue(initialValues.step ? true : false);
 

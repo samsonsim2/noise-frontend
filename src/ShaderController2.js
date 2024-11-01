@@ -85,12 +85,12 @@ const ShaderController2 = () => {
   const changeFrequency = () => {
     console.log("changefreq");
     const newFrequency = isIncreasing
-      ? initialValues.frequency + 0.3
-      : initialValues.frequency - 0.3;
+      ? initialValues.frequency + 0.2
+      : initialValues.frequency - 0.2;
 
-    if (newFrequency > 1.5) {
+    if (newFrequency > 1.0) {
       setIsIncreasing(false); // Start subtracting
-    } else if (newFrequency < 0.3) {
+    } else if (newFrequency < 0.2) {
       setIsIncreasing(true); // Start adding
     }
 
@@ -169,7 +169,7 @@ const ShaderController2 = () => {
           JSON.stringify({
             minStep: 0.1,
             maxStep: 0.6,
-            frequency: 0.3,
+            frequency: 0.2,
             color1: 143613,
             color2: 14350592,
             speed: 1,
@@ -264,7 +264,7 @@ const ShaderController2 = () => {
             color: 'white',
             border: 'none',
             borderRadius: '100%',
-            transform: `rotate(${(initialValues.frequency/1.5) * 360}deg)`,
+            transform: `rotate(${(initialValues.frequency/1.0) * 360}deg)`,
             transition: 'transform 0.3s ease',
             position:'relative',
             padding:'10px'
