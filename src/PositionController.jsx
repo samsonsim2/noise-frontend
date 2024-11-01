@@ -98,7 +98,7 @@ const PositionController = () => {
 
   function handleScale(type) {
 
-    if (type == "increment" && initialValues.scale <3) {
+    if (type == "increment" && initialValues.scale <2) {
 
       try {
         // Check if the WebSocket connection is open
