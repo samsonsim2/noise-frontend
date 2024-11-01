@@ -29,6 +29,19 @@ vec3 hash( vec3 p ) // replace this by something better
 
 	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
 }
+vec2 hexOffset(vec2 p) {
+    float q = sqrt(3.0) / 2.0;
+    vec2 hex = vec2(1.0, q);
+
+    // Convert Cartesian coordinates to a hexagonal grid
+    vec2 uv = vec2(p.x / hex.x, (p.y - mod(floor(p.x), 2.0) * 0.5) / hex.y);
+    return floor(uv);
+}
+
+vec2 hash2(vec2 p) {
+    return fract(sin(p * vec2(127.1, 311.7)) * 43758.5453);
+}
+
 
 float noise( in vec3 p )
 {
@@ -50,7 +63,38 @@ float noise( in vec3 p )
                           dot( hash( i + vec3(1.0,1.0,1.0) ), f - vec3(1.0,1.0,1.0) ), u.x), u.y), u.z );
 }
  
- 
+ float cellular2(vec3 coords) {
+      // Calculate the centered grid base position
+    vec2 gridBasePosition = floor(coords.xy); // Use floor directly
+    vec2 gridCoordOffset = fract(coords.xy);   // Keep the original fractional part
+
+    float closest = 1.0;
+
+    // The offsets now include the necessary shift to center correctly
+    vec2 offsets[5] = vec2[](
+        vec2(-1.0, -1.0), vec2(0.0, -1.0), vec2(1.0, -1.0),
+        vec2(-1.0, 0.0), vec2(0.0, 0.0)
+    );
+
+    for (int i = 0; i < 5; i++) {
+        vec2 neighbourCellPosition = offsets[i];
+        vec2 cellWorldPosition = gridBasePosition + neighbourCellPosition;
+
+        // Center the noise offsets based on the grid position
+        vec2 cellOffset = vec2(
+            noise(vec3(cellWorldPosition, coords.z) + vec3(243.32, 324.235, 0.0)),
+            noise(vec3(cellWorldPosition, coords.z))
+        );
+
+        // Calculate the position difference considering the offset
+        vec2 diff = (neighbourCellPosition + cellOffset) - (gridCoordOffset - vec2(0.5)); // Adjusted for centering
+        float distSquared = dot(diff, diff);  // Use squared distance
+        if (distSquared < closest) {
+            closest = distSquared;
+        }
+    }
+    return sqrt(closest);  // Return the actual distance if needed
+}
 float fbm(vec3 p, int octaves, float persistence, float lacunarity){
     float amplitude = 0.01;
     float frequency = frequency;
@@ -123,12 +167,11 @@ float map(float value, float min1, float max1, float min2, float max2) {
 }
 
 float stepped(float noiseSample){
-    float steppedSample = floor(noiseSample * 10.0)/10.0;
-    float remainder = fract(noiseSample * 10.0);
-    steppedSample = (steppedSample - remainder) * 0.5 + 0.5;
+    float steppedSample = floor(noiseSample * 2.0)/2.0;
+    float remainder = fract(noiseSample * 3.0);
+    steppedSample = (steppedSample - remainder) * 0.5+ 0.5;
     return steppedSample;
 }
-
 float domainWarpingFBM(vec3 coords){
 vec3 offset =  vec3(
 fbm(coords,4,0.5,2.0),
@@ -145,6 +188,25 @@ noiseSample = fbm(coords + 4.0 * offset2 , 1, 0.5, 2.0);
 
 return noiseSample;
 }
+
+float fbm2(vec3 p) {
+    // Simple FBM with just two noise layers
+    return noise(p) * 0.5 + noise(p * 2.0) * 0.25;
+}
+
+float domainWarpingFBM2(vec3 coords) {
+    // Simple offsets to avoid excess calculations
+    vec3 offset = vec3(
+        fbm2(coords), 
+        fbm2(coords + vec3(43.235, 23.112, 0.0)), 
+        0.0
+    );
+
+    // Single domain-warped sample with minimal noise calls
+    return fbm2(coords + offset * 4.0);
+}
+
+
 
 
 
@@ -166,19 +228,19 @@ void main(void) {
     }
     else if(noiseOption == 1.0){
        if(invert == 1.0){
-     noiseSample =  1.0- cellular(coords * frequency );
+     noiseSample =  1.0- cellular2(coords * frequency );
     }
     else if(invert == 0.0){
-     noiseSample =  cellular(coords * frequency );
+     noiseSample =  cellular2(coords * frequency );
     }
     }
      else if(noiseOption == 2.0){
 
          if(invert == 1.0){
-   noiseSample = 1.0 - map(domainWarpingFBM(coords * frequency),-1.0, 1.0, 0.0, 1.0);
+   noiseSample = 1.0 - map(domainWarpingFBM2(coords * frequency),-1.0, 1.0, 0.0, 1.0);
     }
     else if(invert == 0.0){
-    noiseSample = map(domainWarpingFBM(coords * frequency),-1.0, 1.0, 0.0, 1.0);
+    noiseSample = map(domainWarpingFBM2(coords * frequency),-1.0, 1.0, 0.0, 1.0);
     }
      
     
@@ -204,15 +266,7 @@ void main(void) {
 } 
 `
 
-const vertexShader = `
-varying vec2 vUvs; 
-void main() {
-    vec4 localPosition = vec4(position, 1.0);
-    gl_Position = projectionMatrix * modelViewMatrix * localPosition;
-    vUvs = uv;
-}
-`
-
+ 
 
 const vertexShader2 = `
 
@@ -228,11 +282,20 @@ uniform float maxStep;
 uniform float step;
 uniform float noiseOption;
 
+vec2 hexOffset(vec2 p) {
+    float q = sqrt(3.0) / 2.0;
+    vec2 hex = vec2(1.0, q);
 
- 
- 
- 
- 
+    // Convert Cartesian coordinates to a hexagonal grid
+    vec2 uv = vec2(p.x / hex.x, (p.y - mod(floor(p.x), 2.0) * 0.5) / hex.y);
+    return floor(uv);
+}
+
+vec2 hash2(vec2 p) {
+    return fract(sin(p * vec2(127.1, 311.7)) * 43758.5453);
+}
+
+
  
  
 vec3 hash( vec3 p ) // replace this by something better
@@ -264,6 +327,38 @@ float noise( in vec3 p )
                           dot( hash( i + vec3(1.0,1.0,1.0) ), f - vec3(1.0,1.0,1.0) ), u.x), u.y), u.z );
 }
  
+ float cellular2(vec3 coords) {
+     // Calculate the centered grid base position
+    vec2 gridBasePosition = floor(coords.xy); // Use floor directly
+    vec2 gridCoordOffset = fract(coords.xy);   // Keep the original fractional part
+
+    float closest = 1.0;
+
+    // The offsets now include the necessary shift to center correctly
+    vec2 offsets[5] = vec2[](
+        vec2(-1.0, -1.0), vec2(0.0, -1.0), vec2(1.0, -1.0),
+        vec2(-1.0, 0.0), vec2(0.0, 0.0)
+    );
+
+    for (int i = 0; i < 5; i++) {
+        vec2 neighbourCellPosition = offsets[i];
+        vec2 cellWorldPosition = gridBasePosition + neighbourCellPosition;
+
+        // Center the noise offsets based on the grid position
+        vec2 cellOffset = vec2(
+            noise(vec3(cellWorldPosition, coords.z) + vec3(243.32, 324.235, 0.0)),
+            noise(vec3(cellWorldPosition, coords.z))
+        );
+
+        // Calculate the position difference considering the offset
+        vec2 diff = (neighbourCellPosition + cellOffset) - (gridCoordOffset - vec2(0.5)); // Adjusted for centering
+        float distSquared = dot(diff, diff);  // Use squared distance
+        if (distSquared < closest) {
+            closest = distSquared;
+        }
+    }
+    return sqrt(closest);  // Return the actual distance if needed
+}
  
 float fbm(vec3 p, int octaves, float persistence, float lacunarity){
     float amplitude = 0.01;
@@ -308,6 +403,8 @@ float ridgedFBM(vec3 p, int octaves, float persistence, float lacunarity){
 }
 
 //voronoi
+
+
 float cellular(vec3 coords){
 vec2 gridBasePosition = floor(coords.xy);
 vec2 gridCoordOffset = fract(coords.xy);
@@ -337,11 +434,12 @@ float map(float value, float min1, float max1, float min2, float max2) {
 }
 
 float stepped(float noiseSample){
-    float steppedSample = floor(noiseSample * 10.0)/10.0;
-    float remainder = fract(noiseSample * 10.0);
-    steppedSample = (steppedSample - remainder) * 0.5 + 0.5;
+    float steppedSample = floor(noiseSample * 2.0)/2.0;
+    float remainder = fract(noiseSample * 3.0);
+    steppedSample = (steppedSample - remainder) * 0.5+ 0.5;
     return steppedSample;
 }
+//originally it was 10.0 instead of 5.0
 
 float domainWarpingFBM(vec3 coords){
 vec3 offset =  vec3(
@@ -358,6 +456,23 @@ fbm(coords +4.0 * offset +vec3(4.32,0.532,6.324),4,0.5,2.0),0.0);
 noiseSample = fbm(coords + 4.0 * offset2 , 1, 0.5, 2.0);
 
 return noiseSample;
+}
+
+float fbm2(vec3 p) {
+    // Simple FBM with just two noise layers
+    return noise(p) * 0.5 + noise(p * 2.0) * 0.25;
+}
+
+float domainWarpingFBM2(vec3 coords) {
+    // Simple offsets to avoid excess calculations
+    vec3 offset = vec3(
+        fbm2(coords), 
+        fbm2(coords + vec3(43.235, 23.112, 0.0)), 
+        0.0
+    );
+
+    // Single domain-warped sample with minimal noise calls
+    return fbm2(coords + offset * 4.0);
 }
 
 
@@ -379,19 +494,19 @@ float noiseSample = 0.0;
     }
     else if(noiseOption == 1.0){
        if(invert == 1.0){
-     noiseSample =  1.0- cellular(coords * frequency );
+     noiseSample =  1.0- cellular2(coords * frequency );
     }
     else if(invert == 0.0){
-     noiseSample =  cellular(coords * frequency );
+     noiseSample =  cellular2(coords * frequency );
     }
     }
      else if(noiseOption == 2.0){
 
          if(invert == 1.0){
-   noiseSample = 1.0 - map(domainWarpingFBM(coords * frequency),-1.0, 1.0, 0.0, 1.0);
+   noiseSample = 1.0 - map(domainWarpingFBM2(coords * frequency),-1.0, 1.0, 0.0, 1.0);
     }
     else if(invert == 0.0){
-    noiseSample = map(domainWarpingFBM(coords * frequency),-1.0, 1.0, 0.0, 1.0);
+    noiseSample = map(domainWarpingFBM2(coords * frequency),-1.0, 1.0, 0.0, 1.0);
     }
      
     
