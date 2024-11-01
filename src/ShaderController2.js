@@ -109,12 +109,12 @@ const ShaderController2 = () => {
   const changeSpeed = () => {
     console.log("changefreq");
     const newSpeed = isSpeedIncreasing
-      ? initialValues.speed + 2
-      : initialValues.speed - 2;
+      ? initialValues.speed + 1
+      : initialValues.speed - 1;
 
     if (newSpeed > 8) {
       setIsSpeedIncreasing(false); // Start subtracting
-    } else if (newSpeed < 2) {
+    } else if (newSpeed < 1) {
       setIsSpeedIncreasing(true); // Start adding
     }
     try {
