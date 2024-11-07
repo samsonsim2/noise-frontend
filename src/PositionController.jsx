@@ -26,12 +26,13 @@ const PositionController = () => {
           let yRotation = (initialValues.yRotation + 20) % 360
           ws.send(JSON.stringify({ yRotation: yRotation }));
         } else {
+          window.location.reload();
           console.log("WebSocket is not open. Current state:", ws.readyState);
         }
       } catch (error) {
         console.error("Error sending message:", error);
       }
-    
+
 
 
     }
@@ -44,12 +45,13 @@ const PositionController = () => {
           let yRotation = (initialValues.yRotation - 20) % 360
           ws.send(JSON.stringify({ yRotation: yRotation }));
         } else {
+          window.location.reload();
           console.log("WebSocket is not open. Current state:", ws.readyState);
         }
       } catch (error) {
         console.error("Error sending message:", error);
       }
-    
+
     }
 
   }
@@ -64,13 +66,14 @@ const PositionController = () => {
           let zRotation = (initialValues.zRotation + 20) % 360
           ws.send(JSON.stringify({ zRotation: zRotation }));
         } else {
+          window.location.reload();
           console.log("WebSocket is not open. Current state:", ws.readyState);
         }
       } catch (error) {
         console.error("Error sending message:", error);
       }
-    
-     
+
+
 
 
     }
@@ -80,9 +83,10 @@ const PositionController = () => {
       try {
         // Check if the WebSocket connection is open
         if (ws.readyState === WebSocket.OPEN) {
-          let zRotation = (initialValues.zRotation -  20) % 360
+          let zRotation = (initialValues.zRotation - 20) % 360
           ws.send(JSON.stringify({ zRotation: zRotation }));
         } else {
+          window.location.reload();
           console.log("WebSocket is not open. Current state:", ws.readyState);
         }
       } catch (error) {
@@ -93,12 +97,24 @@ const PositionController = () => {
   }
 
   function reset() {
-    ws.send(JSON.stringify({ yRotation: 0, zRotation: 0 ,scale : 1.0}));
+
+    try {
+      // Check if the WebSocket connection is open
+      if (ws.readyState === WebSocket.OPEN) {
+
+        ws.send(JSON.stringify({ yRotation: 0, zRotation: 0, scale: 1.0 }));
+      } else {
+        window.location.reload();
+        console.log("WebSocket is not open. Current state:", ws.readyState);
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   }
 
   function handleScale(type) {
 
-    if (type == "increment" && initialValues.scale <2) {
+    if (type == "increment" && initialValues.scale < 2) {
 
       try {
         // Check if the WebSocket connection is open
@@ -106,32 +122,34 @@ const PositionController = () => {
           let scale = initialValues.scale + 0.2
           ws.send(JSON.stringify({ scale: scale }));
         } else {
+          window.location.reload();
           console.log("WebSocket is not open. Current state:", ws.readyState);
         }
       } catch (error) {
         console.error("Error sending message:", error);
       }
-    
-    
+
+
 
 
     }
 
 
-    if (type == "decrement" && initialValues.scale >  1) {
+    if (type == "decrement" && initialValues.scale > 1) {
       try {
         // Check if the WebSocket connection is open
         if (ws.readyState === WebSocket.OPEN) {
           let scale = initialValues.scale - 0.2
           ws.send(JSON.stringify({ scale: scale }));
         } else {
+          window.location.reload();
           console.log("WebSocket is not open. Current state:", ws.readyState);
         }
       } catch (error) {
         console.error("Error sending message:", error);
       }
-    
-    
+
+
     }
 
   }
@@ -249,9 +267,9 @@ const PositionController = () => {
           gap: '10px',
         }}
       >
-        <button onClick={()=>{handleScale("increment")}} style={{ fontSize: "30px", padding: "20px", width: "150px", height: "150px", borderRadius: "8px" }}>+</button>
+        <button onClick={() => { handleScale("increment") }} style={{ fontSize: "30px", padding: "20px", width: "150px", height: "150px", borderRadius: "8px" }}>+</button>
         <button onClick={() => { reset() }} style={{ fontSize: "30px", padding: "20px", width: "150px", height: "150px", borderRadius: "8px" }}>Reset</button>
-        <button onClick={()=>{handleScale("decrement")}} style={{ fontSize: "30px", padding: "20px", width: "150px", height: "150px", borderRadius: "8px" }}>-</button>
+        <button onClick={() => { handleScale("decrement") }} style={{ fontSize: "30px", padding: "20px", width: "150px", height: "150px", borderRadius: "8px" }}>-</button>
       </div>
     </div>
   );
