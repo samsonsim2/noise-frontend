@@ -110,6 +110,7 @@ const PositionController = () => {
     } catch (error) {
       console.error("Error sending message:", error);
     }
+    window.location.reload();
   }
 
   function handleScale(type) {

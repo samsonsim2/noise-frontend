@@ -192,6 +192,8 @@ const ShaderController2 = () => {
     } catch (error) {
       console.error("Error sending message:", error);
     }
+
+    window.location.reload();
   };
   const [minValue, setMinValue] = useState(0);
   const [maxValue, setMaxValue] = useState(0);
