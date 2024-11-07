@@ -17,6 +17,7 @@ const ShaderController2 = () => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ noiseOption: num }));
       } else {
+        window.location.reload();
         console.log("WebSocket is not open. Current state:", ws.readyState);
       }
     } catch (error) {
@@ -30,6 +31,7 @@ const ShaderController2 = () => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ step: !initialValues.step }));
       } else {
+        window.location.reload();
         console.log("WebSocket is not open. Current state:", ws.readyState);
       }
     } catch (error) {
@@ -43,6 +45,7 @@ const ShaderController2 = () => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ invert: !initialValues.invert }));
       } else {
+        window.location.reload();
         console.log("WebSocket is not open. Current state:", ws.readyState);
       }
     } catch (error) {
@@ -99,6 +102,7 @@ const ShaderController2 = () => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ frequency: newFrequency }));
       } else {
+        window.location.reload();
         console.log("WebSocket is not open. Current state:", ws.readyState);
       }
     } catch (error) {
@@ -123,6 +127,7 @@ const ShaderController2 = () => {
         ws.send(JSON.stringify({ speed: newSpeed }));
       } else {
         console.log("WebSocket is not open. Current state:", ws.readyState);
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error sending message:", error);
@@ -138,6 +143,7 @@ const ShaderController2 = () => {
           JSON.stringify({ color1: new THREE.Color(event.target.value) })
         );
       } else {
+        window.location.reload();
         console.log("WebSocket is not open. Current state:", ws.readyState);
       }
     } catch (error) {
@@ -154,6 +160,7 @@ const ShaderController2 = () => {
           JSON.stringify({ color2: new THREE.Color(event.target.value) })
         );
       } else {
+        window.location.reload();
         console.log("WebSocket is not open. Current state:", ws.readyState);
       }
     } catch (error) {
@@ -179,6 +186,7 @@ const ShaderController2 = () => {
           })
         );
       } else {
+        window.location.reload();
         console.log("WebSocket is not open. Current state:", ws.readyState);
       }
     } catch (error) {
@@ -193,6 +201,7 @@ const ShaderController2 = () => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ minStep: e.target.value }));
       } else {
+        window.location.reload();
         console.log("WebSocket is not open. Current state:", ws.readyState);
       }
     } catch (error) {
@@ -206,6 +215,7 @@ const ShaderController2 = () => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ maxStep: e.target.value }));
       } else {
+        window.location.reload();
         console.log("WebSocket is not open. Current state:", ws.readyState);
       }
     } catch (error) {
@@ -567,8 +577,8 @@ const ShaderController2 = () => {
               key={num}
               onClick={() => handleNoiseOption(num)}
               style={{
-                width: "90px",
-                height: "90px",
+                width: "45px",
+                height: "45px",
                 borderRadius: "50%",
                 backgroundColor:
                   num === initialValues.noiseOption ? "#4CAF50" : "#ccc",
