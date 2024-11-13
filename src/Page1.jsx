@@ -15,13 +15,30 @@ import { GUI } from "dat.gui";
 function Page1() {
 const [yRotation,setYRotation] = useState(0)
 const [zRotation,setZRotation] = useState(0)
-function handleY(){
-  setYRotation((prevRotation) => (prevRotation + 20) % 360);
-}
+const [isInactive, setIsInactive] = useState(false);
 
-function handleZ(){
-  setZRotation((prevRotation) => (prevRotation + 20) % 360);
-}
+useEffect(() => {
+  let timer;
+
+  const handleActivity = () => {
+    setIsInactive(false); // Reset inactivity status on any activity
+    clearTimeout(timer);
+    timer = setTimeout(() => setIsInactive(true), 3000); // Set cursor to hide after 3 seconds of inactivity
+  };
+
+  // Attach event listeners for mouse and keyboard activity
+  window.addEventListener('mousemove', handleActivity);
+  window.addEventListener('keydown', handleActivity);
+
+  // Clean up event listeners on component unmount
+  return () => {
+    clearTimeout(timer);
+    window.removeEventListener('mousemove', handleActivity);
+    window.removeEventListener('keydown', handleActivity);
+  };
+}, []);
+
+
 
   return (
     <main
@@ -32,6 +49,7 @@ function handleZ(){
         overflowX: "hidden", // overflow-x-hidden
         backgroundColor: "#f5f5f4", // bg-stone-100
         display: "flex",
+        cursor: isInactive ? 'none' : 'default',
       }}
     >
             {/* <button onClick={()=>{handleY()}}>h</button>
